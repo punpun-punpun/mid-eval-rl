@@ -19,28 +19,13 @@ We then refined this further with two changes:
 - Switched the prior from uniform to Jeffreys ('Beta(0.5, 0.5)')** and added a forced warm-up, every ad is guaranteed 5 shows before the policy trusts any comparison between them. Since the top ads are deliberately close, leaving the first few looks entirely to random sampling risks unluckily under-trying the actual best ad early on. A guaranteed minimum exposure protects against that.
 
 3. What else we tried:
-Variant                       Local avg clicks             Notes
-Thompson Sampling             477.3 (regret 72.3, 66%      Explores well but has no sense 
-(given baseline, uniform      gap closed)                  of how much tim is life, treats 
-prior)                                                     round 1 and round 4999
-                                                           identically
+The baseline Thompson Sampling algorithm, using a uniform prior, achieved a local average of 477.3 clicks, corresponding to a regret of 72.3 and 66% of the performance gap closed. While it explores effectively, it does not account for the remaining time horizon, treating the very first round and the final round (round 4,999) identically. As a result, it continues exploring even when it would be more beneficial to exploit the best-performing arm near the end.
 
-Initial close aware           512.6(regret 41.3, 82% gap   Blending a random sample 
-Thompson Sampling (Jeffreys   closed)                      with the running average, 
-prior, exponent=1.5)                                       weighted by progress through 
-                                                           horizon, already beat the 
-                                                           baseline clearly
+The initial clock-aware Thompson Sampling approach, which uses a Jeffreys prior with an exponent of 1.5, improved performance to a local average of 512.6 clicks, with a regret of 41.3 and 82% of the gap closed. This version blends a random Thompson Sampling draw with the running average of each arm, where the balance between exploration and exploitation changes based on progress through the time horizon. This simple modification already outperformed the baseline by a clear margin.
 
-Clock aware TS, steeper       497.9(regret 51.7, 76% gap   Worse than the initial version,                                            (exponent=2.0)                closed)                      shifted to pure exploitation  
-                                                           too early costs clicks before  
-                                                           there is enough evidence to  
-                                                           commit confidently 
+A more aggressive version of the clock-aware Thompson Sampling algorithm, using a steeper exploitation schedule (exponent = 2.0), resulted in a local average of 497.9 clicks, a regret of 51.7, and 76% of the gap closed. Despite intending to exploit earlier, this approach actually performed worse than the previous version. By committing to exploitation too soon, it sacrificed valuable exploration before collecting enough evidence to confidently identify the best advertisements.
 
-Final: Jeffery prior+         526.7(regret 27.6, 89% gap   Best result, guaranteeing   
-forced warm up (5/arm)        closed)                      every ad a fair early look 
-+ gentle exponent(0.2)                                     (important since the top ads  
-                                                           are so close) combined with 
-                                                           leaning toward exploration for longer overall.
+The final approach, which combines a Jeffreys prior, a forced warm-up phase of five pulls per arm, and a gentle clock-aware exponent of 0.2, produced the best overall performance. It achieved a local average of 526.7 clicks, a regret of 27.6, and approximately 89% of the performance gap closed. The forced warm-up ensures that every advertisement is explored fairly during the early stages, which is particularly important because the click-through rates of the best ads are very close to one another. After this initial exploration, the algorithm gradually shifts toward exploitation while still maintaining sufficient exploration, leading to the strongest overall results among all the tested variants.
 
 4. Results:
  - Local practice score: 526.7 clicks, regret 27.6 (closed ~89% of the
