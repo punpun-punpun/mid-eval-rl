@@ -1,7 +1,7 @@
 Approach- Team "Suhani and Antara"
 
 1. Understanding the problem:
-10 ads, 5,000 impressions, hidden fixed click-rates, Bernoulli rewards. Score is total clicks averaged over 10 seeds, so we need a policy that finds the best ad quickly and stops wasting impressions once it's confident. The problem statement warns the top ads have very close click-rates on purpose, so the hard part isn't finding a decent ad,jjjj it's telling the best ad apart from the runner-up without overspending on exploration.
+10 ads, 5,000 impressions, hidden fixed click-rates, Bernoulli rewards. Score is total clicks averaged over 10 seeds, so we need a policy that finds the best ad quickly and stops wasting impressions once it's confident. The problem statement warns the top ads have very close click-rates on purpose, so the hard part isn't finding a decent ad, it's telling the best ad apart from the runner-up without overspending on exploration.
 
 2. What we chose and why:
 We started from the given baseline, plain Thompson Sampling with a uniform 'Beta(1, 1)' prior, redrawing one random sample per ad each round and playing the highest. This explores well early but has no sense of "the clock", it treats round 1 and round 4,999 the same way.
